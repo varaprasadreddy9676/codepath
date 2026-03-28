@@ -1,4 +1,5 @@
 pub mod models;
+pub mod settings;
 pub mod interpreter;
 pub mod context;
 pub mod evidence;
