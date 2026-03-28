@@ -25,11 +25,25 @@ export default function RepositoryIngester({ onSuccess, isIngested, activeRepo }
       const data = await resp.json();
       
       if (resp.ok) {
-        setStatus(`Job ID: ${data.job_id} active. Vectors extracting in background.`);
-        setTimeout(() => {
-          onSuccess(path);
-          setLoading(false);
-        }, 1500); // Simulate network latency resolving for UX
+        setStatus(`Job ID: ${data.job_id} active. Tree-Sitter & Java parsers active in background...`);
+        
+        // Continuously poll the Axum server to check if the AST Vectors finished compiling
+        const pollInterval = setInterval(async () => {
+          try {
+            const statusResp = await fetch(`${API_BASE}/jobs/${data.job_id}`);
+            const statusData = await statusResp.json();
+            
+            if (statusData.status === 'completed') {
+              clearInterval(pollInterval);
+              setStatus(`AST map encoded successfully!`);
+              onSuccess(path);
+              setLoading(false);
+            }
+          } catch(e) {
+             // Silently ignore drop traces during polling loops
+          }
+        }, 1000);
+
       } else {
         setStatus('Remote backend connection routing failed.');
         setLoading(false);
@@ -69,7 +83,7 @@ export default function RepositoryIngester({ onSuccess, isIngested, activeRepo }
         ) : (
           <button type="submit" className="cyber-button" disabled={loading || !path.trim()}>
             {loading ? <Loader2 size={18} className="lucide-spin" /> : <FolderGit2 size={18} />}
-            {loading ? 'Executing Indexers...' : 'Execute Local Crawl'}
+            {loading ? 'Executing Engine...' : 'Execute Local Crawl'}
           </button>
         )}
       </div>
