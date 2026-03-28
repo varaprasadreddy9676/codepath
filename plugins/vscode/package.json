@@ -1,0 +1,21 @@
+{
+  "name": "codepath-intelligence",
+  "displayName": "CodePath Intelligence Engine",
+  "description": "IDE integration for the CodePath reasoning platform",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "codepath.diagnose",
+        "title": "CodePath: Diagnose this stacktrace"
+      }
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "framework": "Next.js",
+  "version": "14.x",
+  "common_patterns": [
+    {
+      "intent": "hydration_error",
+      "symptom": "Text content does not match server-rendered HTML",
+      "resolution_hint": "Ensure browser-specific APIs (window, document) are invoked inside useEffect"
+    }
+  ]
+}

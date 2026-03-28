@@ -1,0 +1,11 @@
+{
+  "framework": "Spring Boot",
+  "version": "3.x",
+  "common_patterns": [
+    {
+      "intent": "dependency_injection_failure",
+      "symptom": "NoSuchBeanDefinitionException",
+      "resolution_hint": "Check @Service, @Component annotations and package scanning paths"
+    }
+  ]
+}
