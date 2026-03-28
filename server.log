@@ -1,0 +1,35 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.11s
+     Running `target/debug/ai_platform`
+[2m2026-03-28T18:39:04.247121Z[0m [32m INFO[0m [2mai_platform[0m[2m:[0m Starting Generic Application Intelligence Platform API...
+[2m2026-03-28T18:39:04.248017Z[0m [32m INFO[0m [2mai_platform[0m[2m:[0m Listening on 127.0.0.1:3000
+[2m2026-03-28T18:39:35.723896Z[0m [32m INFO[0m [2mai_platform[0m[2m:[0m Received repository ingestion request for: /Users/sai/dev/work/data-exporter
+[2m2026-03-28T18:39:35.724183Z[0m [32m INFO[0m [2mai_platform::parsers::java[0m[2m:[0m Initializing JavaParser AST extraction traversing: /Users/sai/dev/work/data-exporter
+[2m2026-03-28T18:39:36.169780Z[0m [32m INFO[0m [2mai_platform[0m[2m:[0m Received new investigation request: Why did data-exporter fail with an exception on EXPORT-9921?
+[2m2026-03-28T18:39:36.169811Z[0m [32m INFO[0m [2mai_platform::interpreter[0m[2m:[0m Interpreting intent from: Why did data-exporter fail with an exception on EXPORT-9921?
+[2m2026-03-28T18:39:36.172694Z[0m [32m INFO[0m [2mai_platform::interpreter[0m[2m:[0m Resolved Syntactical Intent: technical_diagnosis | Found Logical Entity: None
+[2m2026-03-28T18:39:36.172726Z[0m [32m INFO[0m [2mai_platform::context[0m[2m:[0m Resolving context structural vectors for intent: technical_diagnosis
+[2m2026-03-28T18:39:36.172769Z[0m [32m INFO[0m [2mai_platform::context[0m[2m:[0m Valid identifier 'PORT-9921' detected. Triggering simulated Qdrant vector retrieval.
+[2m2026-03-28T18:39:36.172794Z[0m [32m INFO[0m [2mai_platform::evidence[0m[2m:[0m Executing evidence gathering protocols for context paths: ["core_exceptions", "infrastructure_routing"]
+[2m2026-03-28T18:39:36.172820Z[0m [32m INFO[0m [2mai_platform::evidence[0m[2m:[0m Fetching AST and Lexical evidence boundaries for module: core_exceptions
+[2m2026-03-28T18:39:36.172825Z[0m [32m INFO[0m [2mai_platform::evidence[0m[2m:[0m Fetching AST and Lexical evidence boundaries for module: infrastructure_routing
+[2m2026-03-28T18:39:36.172831Z[0m [32m INFO[0m [2mai_platform::gatherers::opentelemetry_ingest[0m[2m:[0m Collecting OpenTelemetry distributed traces for: QdrantNode_PORT-9921
+[2m2026-03-28T18:39:36.197718Z[0m [33m WARN[0m [2mai_platform::gatherers::opentelemetry_ingest[0m[2m:[0m OpenTelemetry Jaeger cluster completely unreachable: error sending request for url (http://localhost:16686/api/traces/QdrantNode_PORT-9921)
+[2m2026-03-28T18:39:36.197750Z[0m [32m INFO[0m [2mai_platform::gatherers::db_adapter[0m[2m:[0m Extracting read-only state from unified data bucket 'core_metadata' for entity 'runtime'
+[2m2026-03-28T18:39:36.198196Z[0m [33m WARN[0m [2mai_platform::gatherers::db_adapter[0m[2m:[0m Could not connect to target state data store at postgresql://readonly_user:password@localhost/appdb. Error: error connecting to server
+[2m2026-03-28T18:39:36.198223Z[0m [32m INFO[0m [2mai_platform::evaluator[0m[2m:[0m Evaluating Extracted Rules against Factual Application State...
+[2m2026-03-28T18:39:36.198233Z[0m [32m INFO[0m [2mai_platform::composer[0m[2m:[0m Synthesizing final architectural narrative with confidence score: 0.98
+[2m2026-03-28T18:39:37.266438Z[0m [32m INFO[0m [2mai_platform::parsers::generic[0m[2m:[0m Initializing Tree-sitter directory traversal for repo: /Users/sai/dev/work/data-exporter
+[2m2026-03-28T18:42:43.401000Z[0m [32m INFO[0m [2mai_platform[0m[2m:[0m Received new investigation request: Why is this bill still draft? Let me know about BILL-1234
+[2m2026-03-28T18:42:43.401057Z[0m [32m INFO[0m [2mai_platform::interpreter[0m[2m:[0m Interpreting intent from: Why is this bill still draft? Let me know about BILL-1234
+[2m2026-03-28T18:42:43.404993Z[0m [32m INFO[0m [2mai_platform::interpreter[0m[2m:[0m Resolved Syntactical Intent: business_behavior_explanation | Found Logical Entity: Some("bill")
+[2m2026-03-28T18:42:43.405021Z[0m [32m INFO[0m [2mai_platform::context[0m[2m:[0m Resolving context structural vectors for intent: business_behavior_explanation
+[2m2026-03-28T18:42:43.405050Z[0m [32m INFO[0m [2mai_platform::context[0m[2m:[0m Valid identifier 'BILL-1234' detected. Triggering simulated Qdrant vector retrieval.
+[2m2026-03-28T18:42:43.405063Z[0m [32m INFO[0m [2mai_platform::evidence[0m[2m:[0m Executing evidence gathering protocols for context paths: ["billing_service", "pricing_rules"]
+[2m2026-03-28T18:42:43.405076Z[0m [32m INFO[0m [2mai_platform::evidence[0m[2m:[0m Fetching AST and Lexical evidence boundaries for module: billing_service
+[2m2026-03-28T18:42:43.405086Z[0m [32m INFO[0m [2mai_platform::evidence[0m[2m:[0m Fetching AST and Lexical evidence boundaries for module: pricing_rules
+[2m2026-03-28T18:42:43.405097Z[0m [32m INFO[0m [2mai_platform::gatherers::opentelemetry_ingest[0m[2m:[0m Collecting OpenTelemetry distributed traces for: QdrantNode_BILL-1234
+[2m2026-03-28T18:42:43.406146Z[0m [33m WARN[0m [2mai_platform::gatherers::opentelemetry_ingest[0m[2m:[0m OpenTelemetry Jaeger cluster completely unreachable: error sending request for url (http://localhost:16686/api/traces/QdrantNode_BILL-1234)
+[2m2026-03-28T18:42:43.406191Z[0m [32m INFO[0m [2mai_platform::gatherers::db_adapter[0m[2m:[0m Extracting read-only state from unified data bucket 'core_metadata' for entity 'runtime'
+[2m2026-03-28T18:42:43.406659Z[0m [33m WARN[0m [2mai_platform::gatherers::db_adapter[0m[2m:[0m Could not connect to target state data store at postgresql://readonly_user:password@localhost/appdb. Error: error connecting to server
+[2m2026-03-28T18:42:43.406688Z[0m [32m INFO[0m [2mai_platform::evaluator[0m[2m:[0m Evaluating Extracted Rules against Factual Application State...
+[2m2026-03-28T18:42:43.406706Z[0m [32m INFO[0m [2mai_platform::composer[0m[2m:[0m Synthesizing final architectural narrative with confidence score: 0.98

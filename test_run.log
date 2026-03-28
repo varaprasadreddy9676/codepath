@@ -1,0 +1,7 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.10s
+     Running `target/debug/ai_platform`
+[2m2026-03-28T18:39:32.540579Z[0m [32m INFO[0m [2mai_platform[0m[2m:[0m Starting Generic Application Intelligence Platform API...
+
+thread 'main' (20953530) panicked at src/main.rs:76:74:
+called `Result::unwrap()` on an `Err` value: Os { code: 48, kind: AddrInUse, message: "Address already in use" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

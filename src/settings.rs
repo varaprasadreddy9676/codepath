@@ -6,6 +6,8 @@ pub struct Settings {
     pub qdrant_url: String,
     pub neo4j_url: String,
     pub jaeger_url: String,
+    pub openai_api_key: String,
+    pub llm_api_url: String,
 }
 
 impl Settings {
@@ -22,6 +24,9 @@ impl Settings {
                 .unwrap_or_else(|_| "bolt://localhost:7687".to_string()),
             jaeger_url: env::var("JAEGER_URL")
                 .unwrap_or_else(|_| "http://localhost:16686".to_string()),
+            openai_api_key: env::var("OPENAI_API_KEY").unwrap_or_default(),
+            llm_api_url: env::var("LLM_API_URL")
+                .unwrap_or_else(|_| "https://api.openai.com/v1/chat/completions".to_string()),
         }
     }
 }
