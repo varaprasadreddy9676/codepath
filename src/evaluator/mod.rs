@@ -4,10 +4,16 @@ use reqwest::Client;
 use serde_json::{json, Value};
 use crate::settings::Settings;
 
-pub async fn evaluate_constraints(evidence: &EvidencePackage) -> DiagnosticResult {
+pub async fn evaluate_constraints(
+    evidence: &EvidencePackage,
+    custom_url: Option<String>,
+    custom_key: Option<String>,
+    custom_model: Option<String>
+) -> DiagnosticResult {
     let config = Settings::load();
-    let api_key = config.openai_api_key;
-    let llm_url = config.llm_api_url;
+    let api_key = custom_key.unwrap_or(config.openai_api_key);
+    let llm_url = custom_url.unwrap_or(config.llm_api_url);
+    let llm_model = custom_model.unwrap_or(config.llm_model);
 
     let mut cause = String::new();
     let mut conf = 0.0;
@@ -29,7 +35,7 @@ pub async fn evaluate_constraints(evidence: &EvidencePackage) -> DiagnosticResul
         let user_prompt = format!("CODE AST EVIDENCE:\n{:?}\n\nDATABASE STATE EVIDENCE:\n{:?}", evidence.code_evidence, evidence.db_evidence);
 
         let payload = json!({
-            "model": config.llm_model,
+            "model": llm_model,
             "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}

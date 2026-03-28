@@ -20,7 +20,7 @@ async fn test_full_pipeline_routing() {
     assert!(evidence_pkg.db_evidence.is_some());
 
     // Test Evaluation mathematics
-    let result = evaluator::evaluate_constraints(&evidence_pkg).await;
+    let eval_result = codepath::evaluator::evaluate_constraints(&evidence_pkg, None, None, None).await;
     assert!(result.confidence > 0.95);
 
     // Test the Composer formatter

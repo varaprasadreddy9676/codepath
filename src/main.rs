@@ -20,6 +20,9 @@ type AppState = Arc<RwLock<HashMap<String, String>>>;
 #[derive(Serialize, Deserialize)]
 struct QueryRequest {
     text: String,
+    llm_api_url: Option<String>,
+    llm_api_key: Option<String>,
+    llm_model: Option<String>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -80,7 +83,12 @@ async fn investigate(Json(payload): Json<QueryRequest>) -> Json<QueryResponse> {
     let intent = interpreter::interpret_intent(payload.text).await;
     let context_pkg = context::resolve_context(&intent).await;
     let evidence_pkg = evidence::collect_evidence(&context_pkg).await;
-    let result = evaluator::evaluate_constraints(&evidence_pkg).await;
+    let result = evaluator::evaluate_constraints(
+        &evidence_pkg,
+        payload.llm_api_url,
+        payload.llm_api_key,
+        payload.llm_model
+    ).await;
     let explanation = composer::compose_explanation(&result).await;
     
     Json(QueryResponse { result: explanation })
