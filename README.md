@@ -1,44 +1,47 @@
-# Generic Application Intelligence Platform
+# ⚡ App Diagnostics Reasoning Engine
 
-An open-source, Rust-based reasoning engine designed for codebase understanding, business behavior explanation, runtime diagnosis, and evidence-based root cause analysis.
+Most AI coding assistants guess. This engine *proves*. 
 
-## Overview
-This platform goes beyond simple RAG (Retrieval-Augmented Generation) or LLM chat. It is a deterministic, five-stage pipeline designed to evaluate expected behavior against actual application state:
+Welcome to a deterministic, 5-stage diagnostic pipeline heavily optimized in **Rust**. This platform is built to parse vast codebases, fetch factual database evidence, and mathematically prove what your application *should* have done against what it *actually* did. 
 
-1. **Question Interpreter:** Normalizes the user question into an intent and extraction schema.
-2. **Context Resolver:** Gathers semantic and structural code/config context.
-3. **Evidence Collector:** Retrieves factual data (DB rows, logs, API responses).
-4. **Constraint Evaluator:** Diagnoses the gap between expected rules and actual evidence.
-5. **Explanation Composer:** Produces grounded, human-readable root cause answers.
+## 🧠 Why This Exists
+Debugging enterprise applications today means staring at distributed logs, tracing microservices, and guessing if a config flag caused a `NullPointerException`. 
 
-## Getting Started
+We automate the absolute worst parts of root cause analysis. This platform routes every problem through a rigid, hallucination-free pipeline:
 
-### Prerequisites
-- Rust (1.70+)
-- Cargo toolchain
+1. **Interpret:** Maps human questions (e.g., "Why didn't this discount apply?") to intent primitives.
+2. **Contextualize:** Crawls the repo (using ASTs, Lexical, and Graph tools) to find the exact rules governing the feature.
+3. **Collect Evidence:** Pulls the *live* data (Change logs, actual DB rows, active flags).
+4. **Evaluate:** The diagnostic brain. It mathematically compares the expected code rules vs the actual evidence.
+5. **Diagnose:** Synthesizes the exact break-point into a hyper-focused, human-friendly explanation.
 
-### Installation
+## 🚀 Quick Start
+
+Built on **Rust**, `axum`, and `tokio` for incredible performance and concurrency handling.
+
 ```bash
-git clone https://github.com/codepath/ai_platform.git
-cd ai_platform
+git clone https://github.com/varaprasadreddy9676/codepath.git
+cd codepath
+
+# Build the project
 cargo build
-```
 
-### Running the API
-```bash
+# Spin up the reasoning API
 cargo run
 ```
-The server will start on `127.0.0.1:3000`.
+The server will boot up and bind to `127.0.0.1:3000`.
 
-## Testing
-We take software quality seriously. To run the integration and unit tests:
+## 🧪 Bulletproof Testing
+We treat software quality as a first-class citizen. Run the full unit and integration suite with a single command:
+
 ```bash
 cargo test
 ```
 
-## Documentation
-- [Architecture Guide](docs/architecture.md)
-- [Project Roadmap](ROADMAP.md)
+## 🗺️ Where are we going?
+We are rapidly building out multi-language syntax chunking (`tree-sitter`), JVM-specific deep abstractions (`JavaParser`), and Vector Database adapters (`Qdrant`). 
 
-## License
-MIT
+Check out the [Project Roadmap](ROADMAP.md) to see what's dropping next, and dive into the [Deep Architecture Docs](docs/architecture.md) to learn how the entire pipeline functions under the hood.
+
+---
+*Built for engineers who are tired of guessing.*
