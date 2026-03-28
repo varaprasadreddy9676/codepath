@@ -10,4 +10,6 @@ serde_json = "1.0.149"
 tokio = { version = "1.50.0", features = ["full"] }
 tracing = "0.1.44"
 tracing-subscriber = "0.3.23"
+tree-sitter = "0.26.7"
+tree-sitter-rust = "0.24.2"
 uuid = { version = "1.23.0", features = ["v4", "serde"] }
