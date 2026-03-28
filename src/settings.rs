@@ -8,6 +8,7 @@ pub struct Settings {
     pub jaeger_url: String,
     pub openai_api_key: String,
     pub llm_api_url: String,
+    pub llm_model: String,
 }
 
 impl Settings {
@@ -27,6 +28,8 @@ impl Settings {
             openai_api_key: env::var("OPENAI_API_KEY").unwrap_or_default(),
             llm_api_url: env::var("LLM_API_URL")
                 .unwrap_or_else(|_| "https://api.openai.com/v1/chat/completions".to_string()),
+            llm_model: env::var("LLM_MODEL")
+                .unwrap_or_else(|_| "gpt-4o".to_string()),
         }
     }
 }

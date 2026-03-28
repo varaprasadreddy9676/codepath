@@ -29,7 +29,7 @@ pub async fn evaluate_constraints(evidence: &EvidencePackage) -> DiagnosticResul
         let user_prompt = format!("CODE AST EVIDENCE:\n{:?}\n\nDATABASE STATE EVIDENCE:\n{:?}", evidence.code_evidence, evidence.db_evidence);
 
         let payload = json!({
-            "model": "gpt-4o",
+            "model": config.llm_model,
             "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
