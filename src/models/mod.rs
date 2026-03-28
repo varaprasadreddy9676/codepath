@@ -25,6 +25,18 @@ pub struct DiagnosticResult {
     pub confidence: f32,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct IngestRequest {
+    pub repo_url: String,
+    pub branch: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct IngestResponse {
+    pub job_id: String,
+    pub status: String,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

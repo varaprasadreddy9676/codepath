@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use tracing::info;
 
 use ai_platform::{
-    interpreter, context, evidence, evaluator, composer
+    interpreter, context, evidence, evaluator, composer, parsers, models::{IngestRequest, IngestResponse}
 };
 
 #[derive(Serialize, Deserialize)]
@@ -18,6 +18,24 @@ struct QueryRequest {
 #[derive(Serialize, Deserialize)]
 struct QueryResponse {
     result: String,
+}
+
+async fn ingest_repo(Json(payload): Json<IngestRequest>) -> Json<IngestResponse> {
+    info!("Received repository ingestion request for: {}", payload.repo_url);
+    
+    let job_id = uuid::Uuid::new_v4().to_string();
+    
+    // Kick off async parse workers
+    let repo_url = payload.repo_url.clone();
+    tokio::spawn(async move {
+        parsers::java::parse_repository(&repo_url).await;
+        parsers::generic::parse_repository(&repo_url).await;
+    });
+
+    Json(IngestResponse {
+        job_id,
+        status: "processing".to_string(),
+    })
 }
 
 async fn health_check() -> &'static str {
@@ -52,7 +70,8 @@ async fn main() {
 
     let app = Router::new()
         .route("/api/health", get(health_check))
-        .route("/api/v1/investigate", post(investigate));
+        .route("/api/v1/investigate", post(investigate))
+        .route("/api/v1/ingest", post(ingest_repo));
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000").await.unwrap();
     info!("Listening on {}", listener.local_addr().unwrap());
