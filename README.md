@@ -1,4 +1,4 @@
-# ⚡ App Diagnostics Reasoning Engine
+# 🚀 CodePath Intelligence Platform
 
 Most AI coding assistants guess. This engine *proves*. 
 
