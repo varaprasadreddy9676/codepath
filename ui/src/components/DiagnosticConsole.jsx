@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown';
 
 const API_BASE = 'http://127.0.0.1:3000/api/v1';
 
-export default function DiagnosticConsole({ isEngineReady }) {
+export default function DiagnosticConsole({ isEngineReady, aiConfig }) {
   const [query, setQuery] = useState('');
   const [messages, setMessages] = useState([
     { role: 'ai', content: '**CodePath Generic Intelligence Engine v1.0** \n\nPlease provide a repository absolute path in the left panel to initialize the generic AST parsers. Once successfully indexed, paste your stacktraces or arbitrary logic questions directly here.' }
@@ -29,7 +29,12 @@ export default function DiagnosticConsole({ isEngineReady }) {
       const resp = await fetch(`${API_BASE}/investigate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: userPayload })
+        body: JSON.stringify({ 
+            text: userPayload,
+            llm_api_url: aiConfig.url,
+            llm_model: aiConfig.model,
+            llm_api_key: aiConfig.key
+        })
       });
       
       const data = await resp.json();

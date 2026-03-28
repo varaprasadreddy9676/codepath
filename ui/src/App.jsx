@@ -2,10 +2,16 @@ import React, { useState } from 'react';
 import { Terminal, Database } from 'lucide-react';
 import RepositoryIngester from './components/RepositoryIngester';
 import DiagnosticConsole from './components/DiagnosticConsole';
+import ModelSettings from './components/ModelSettings';
 
 function App() {
   const [isIngested, setIsIngested] = useState(false);
   const [activeRepo, setActiveRepo] = useState(null);
+  const [aiConfig, setAiConfig] = useState({
+    url: 'http://localhost:11434/v1/chat/completions',
+    model: 'llama3.1:8b',
+    key: 'ollama'
+  });
 
   const handleIngestSuccess = (repoUrl) => {
     setIsIngested(true);
@@ -26,6 +32,8 @@ function App() {
           isIngested={isIngested}
           activeRepo={activeRepo}
         />
+
+        <ModelSettings aiConfig={aiConfig} setAiConfig={setAiConfig} />
       </div>
 
       {/* Main Container: Diagnostics */}
@@ -35,7 +43,7 @@ function App() {
           Intelligence Evaluator Console
         </h2>
         
-        <DiagnosticConsole isEngineReady={isIngested} />
+        <DiagnosticConsole isEngineReady={isIngested} aiConfig={aiConfig} />
       </div>
     </div>
   );
