@@ -1,15 +1,21 @@
 use tracing::{info, warn};
 use std::process::Command;
 use serde_json::Value;
+use walkdir::WalkDir;
 
-pub async fn parse_repository(repo_url: &str) {
-    info!("Initializing JavaParser AST extraction for repo: {}", repo_url);
-    // STUB: Queue extraction logic over .java file trees
+pub async fn parse_repository(repo_path: &str) {
+    info!("Initializing JavaParser AST extraction traversing: {}", repo_path);
+    
+    for entry in WalkDir::new(repo_path).into_iter().filter_map(|e| e.ok()) {
+        let path = entry.path();
+        if path.is_file() && path.extension().and_then(|s| s.to_str()) == Some("java") {
+            let path_str = path.to_string_lossy();
+            let _ast = extract_java_ast(&path_str);
+        }
+    }
 }
 
 pub fn extract_java_ast(file_path: &str) -> Option<Value> {
-    // Trigger the specialized Maven-compiled JavaParser worker dynamically out-of-band
-    // passing the active request payload directly as arguments
     let output = Command::new("java")
         .arg("-cp")
         .arg("workers/java-parser/target/classes:workers/java-parser/lib/*")
@@ -42,8 +48,6 @@ mod tests {
 
     #[test]
     fn test_java_parser_graceful_routing() {
-        // Without the heavy JVM dependencies pre-built, the sub-process router should securely 
-        // collapse back to None instead of panicking the primary orchestrator
         let extraction = extract_java_ast("NonExistentConfig.java");
         assert!(extraction.is_none()); 
     }
