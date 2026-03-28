@@ -1,8 +1,7 @@
-   Compiling ai_platform v0.1.0 (/Users/sai/Documents/GitHub/codepath)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.70s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.20s
      Running `target/debug/ai_platform`
-[2m2026-03-28T19:06:08.172950Z[0m [32m INFO[0m [2mai_platform[0m[2m:[0m Starting Generic Application Intelligence Platform API...
+[2m2026-03-28T19:06:38.834337Z[0m [32m INFO[0m [2mai_platform[0m[2m:[0m Starting Generic Application Intelligence Platform API...
 
-thread 'main' (21143556) panicked at src/main.rs:109:10:
+thread 'main' (21147429) panicked at src/main.rs:109:10:
 Path segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
