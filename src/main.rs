@@ -5,6 +5,7 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use tracing::info;
+use tower_http::cors::CorsLayer;
 
 use ai_platform::{
     interpreter, context, evidence, evaluator, composer, parsers, models::{IngestRequest, IngestResponse}
@@ -71,7 +72,8 @@ async fn main() {
     let app = Router::new()
         .route("/api/health", get(health_check))
         .route("/api/v1/investigate", post(investigate))
-        .route("/api/v1/ingest", post(ingest_repo));
+        .route("/api/v1/ingest", post(ingest_repo))
+        .layer(CorsLayer::permissive());
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000").await.unwrap();
     info!("Listening on {}", listener.local_addr().unwrap());
