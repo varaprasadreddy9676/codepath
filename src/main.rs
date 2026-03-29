@@ -106,7 +106,7 @@ async fn main() {
         .route("/api/health", get(health_check))
         .route("/api/v1/investigate", post(investigate))
         .route("/api/v1/ingest", post(ingest_repo))
-        .route("/api/v1/jobs/:job_id", get(get_job_status))
+        .route("/api/v1/jobs/{job_id}", get(get_job_status))
         .layer(CorsLayer::permissive())
         .with_state(shared_state);
 
