@@ -75,6 +75,34 @@ impl QdrantAdapter {
 
         Ok(point_id)
     }
+
+    pub async fn search_ast_chunks(&self, collection_name: &str, vector: Vec<f32>, limit: u64) -> Result<Vec<serde_json::Value>, Box<dyn std::error::Error>> {
+        let url = format!("{}/collections/{}/points/search", self.base_url, collection_name);
+        
+        let payload = json!({
+            "vector": vector,
+            "limit": limit,
+            "with_payload": true
+        });
+
+        match self.client.post(&url).json(&payload).send().await {
+            Ok(resp) => {
+                if resp.status().is_success() {
+                    let data: serde_json::Value = resp.json().await?;
+                    if let Some(result_arr) = data.get("result").and_then(|r| r.as_array()) {
+                        let payloads = result_arr.iter().filter_map(|point| point.get("payload").cloned()).collect();
+                        return Ok(payloads);
+                    }
+                } else {
+                    let errmsg = resp.text().await.unwrap_or_default();
+                    warn!("Qdrant semantic search pipeline evaluated failure: {}", errmsg);
+                }
+            },
+            Err(e) => warn!("Failed to resolve Qdrant endpoint during AST search retrieval: {}", e),
+        }
+
+        Ok(Vec::new())
+    }
 }
 
 #[cfg(test)]

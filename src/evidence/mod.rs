@@ -7,8 +7,8 @@ pub async fn collect_evidence(context: &ContextPackage) -> EvidencePackage {
 
     let mut code_evidence = Vec::new();
     for node in &context.relevant_code_nodes {
-        info!("Fetching AST and Lexical evidence boundaries for module: {}", node);
-        code_evidence.push(format!("AST Cluster for node [{}] successfully indexed.", node));
+        info!("Forwarding Semantic AST chunk to Intelligence Evaluator...");
+        code_evidence.push(node.clone());
         
         if node.starts_with("QdrantNode_") {
             opentelemetry_ingest::collect_trace_logs(node).await;
