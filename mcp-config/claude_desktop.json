@@ -1,0 +1,11 @@
+{
+  "_comment": "Copy this into ~/Library/Application Support/Claude/claude_desktop_config.json (macOS) or ~/.config/claude/claude_desktop_config.json (Linux). Update the command path to your codepath binary location.",
+  "mcpServers": {
+    "codepath": {
+      "command": "/path/to/codepath/target/release/codepath-mcp",
+      "env": {
+        "CODEPATH_API_URL": "http://localhost:3000"
+      }
+    }
+  }
+}

@@ -42,6 +42,7 @@ pub async fn interpret_intent(raw_text: String) -> InvestigationRequest {
 
     InvestigationRequest {
         intent,
+        original_text: raw_text,
         entity_type,
         identifiers,
     }

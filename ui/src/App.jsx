@@ -3,6 +3,7 @@ import { Terminal, Database } from 'lucide-react';
 import RepositoryIngester from './components/RepositoryIngester';
 import DiagnosticConsole from './components/DiagnosticConsole';
 import ModelSettings from './components/ModelSettings';
+import RepoContext from './components/RepoContext';
 
 function App() {
   const [isIngested, setIsIngested] = useState(false);
@@ -21,7 +22,7 @@ function App() {
   return (
     <div className="app-container">
       {/* Sidebar: Ingestion Settings */}
-      <div className="glass-panel">
+      <div className="glass-panel" style={{ overflowY: 'auto' }}>
         <h2 className="section-title">
           <Database size={20} className="text-cyan" />
           CodePath Ingestion
@@ -34,6 +35,8 @@ function App() {
         />
 
         <ModelSettings aiConfig={aiConfig} setAiConfig={setAiConfig} />
+
+        <RepoContext activeRepo={activeRepo} />
       </div>
 
       {/* Main Container: Diagnostics */}

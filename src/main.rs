@@ -12,7 +12,9 @@ use tokio::sync::RwLock;
 use std::collections::HashMap;
 
 use ai_platform::{
-    interpreter, context, evidence, evaluator, composer, parsers, models::{IngestRequest, IngestResponse}
+    interpreter, context, evidence, evaluator, composer, parsers,
+    context_engine::context_formatter::{self, PackOptions, OutputStyle},
+    models::{IngestRequest, IngestResponse, PackRequest, PackResponse},
 };
 
 type AppState = Arc<RwLock<HashMap<String, String>>>;
@@ -94,6 +96,38 @@ async fn investigate(Json(payload): Json<QueryRequest>) -> Json<QueryResponse> {
     Json(QueryResponse { result: explanation })
 }
 
+/// Pack a repository into a single LLM-friendly context document.
+/// Features: directory tree, repo map (symbol extraction), git logs/diffs,
+/// glob filtering, code compression, XML/Markdown/Plain output.
+async fn pack_repo(Json(payload): Json<PackRequest>) -> Json<PackResponse> {
+    info!("Received pack request for: {}", payload.repo_path);
+
+    let options = PackOptions {
+        style: OutputStyle::from_str(payload.style.as_deref().unwrap_or("xml")),
+        compress: payload.compress.unwrap_or(false),
+        include_patterns: payload.include_patterns,
+        exclude_patterns: payload.exclude_patterns,
+        include_git_diff: payload.include_git_diff.unwrap_or(false),
+        include_git_log: payload.include_git_log.unwrap_or(true),
+        git_log_count: payload.git_log_count.unwrap_or(50),
+        show_line_numbers: payload.show_line_numbers.unwrap_or(false),
+        remove_empty_lines: false,
+        include_tree: payload.include_tree.unwrap_or(true),
+        include_repo_map: payload.include_repo_map.unwrap_or(true),
+    };
+
+    let result = tokio::task::spawn_blocking(move || {
+        context_formatter::pack_repository(&payload.repo_path, &options)
+    }).await.unwrap();
+
+    Json(PackResponse {
+        content: result.content,
+        total_tokens: result.total_tokens,
+        file_count: result.file_count,
+        style: result.style,
+    })
+}
+
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt::init();
@@ -106,6 +140,7 @@ async fn main() {
         .route("/api/health", get(health_check))
         .route("/api/v1/investigate", post(investigate))
         .route("/api/v1/ingest", post(ingest_repo))
+        .route("/api/v1/pack", post(pack_repo))
         .route("/api/v1/jobs/{job_id}", get(get_job_status))
         .layer(CorsLayer::permissive())
         .with_state(shared_state);

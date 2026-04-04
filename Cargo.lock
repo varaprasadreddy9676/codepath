@@ -17,6 +17,7 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "dotenvy",
+ "globset",
  "ignore",
  "neo4rs",
  "regex",
@@ -24,6 +25,7 @@ dependencies = [
  "serde",
  "serde_json",
  "tantivy",
+ "tempfile",
  "tokio",
  "tokio-postgres",
  "tower-http",

@@ -31,36 +31,68 @@ pub async fn evaluate_constraints(
     } else {
         info!("LLM brain configured via {}. Dispatching structural context payload...", llm_url);
         
-        let system_prompt = "You are a deterministic coding intelligence engine. Analyze the provided codebase AST chunks and live database evidence to determine exactly why the given workflow failed. Output the root cause in 1 sentence.";
-        let user_prompt = format!("CODE AST EVIDENCE:\n{:?}\n\nDATABASE STATE EVIDENCE:\n{:?}", evidence.code_evidence, evidence.db_evidence);
+        let system_prompt = "You are a senior code auditor. Analyze the provided code chunks retrieved via semantic search from a real codebase. Be specific — reference exact function names, conditions, files, and logic flows. Identify bugs, security issues, error handling gaps, or design problems. Do NOT mention database connections or configuration unless the code evidence explicitly shows database issues.";
+
+        // Format code evidence cleanly and cap to stay within free-tier token limits
+        let mut code_text = String::new();
+        for chunk in &evidence.code_evidence {
+            if code_text.len() + chunk.len() > 5500 {
+                break;
+            }
+            code_text.push_str(chunk);
+            code_text.push('\n');
+        }
+
+        let user_prompt = if let Some(db) = &evidence.db_evidence {
+            format!("CODE EVIDENCE:\n{}\n\nDATABASE STATE:\n{}", code_text, db)
+        } else {
+            format!("CODE EVIDENCE:\n{}\n\nAnalyze based on the code evidence above. Focus on real issues in the code.", code_text)
+        };
 
         let payload = json!({
             "model": llm_model,
             "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
-            ]
+            ],
+            "max_tokens": 1500
         });
 
         let client = Client::new();
-        match client.post(&llm_url)
-            .bearer_auth(api_key)
-            .json(&payload)
-            .send().await 
-        {
-            Ok(resp) => {
-                if resp.status().is_success() {
-                    if let Ok(json_body) = resp.json::<Value>().await {
-                        if let Some(content) = json_body["choices"][0]["message"]["content"].as_str() {
-                            cause = content.to_string();
-                            conf = 0.88; // Assign strict dynamic confidence
+        let max_retries = 2;
+        for attempt in 0..=max_retries {
+            match client.post(&llm_url)
+                .bearer_auth(&api_key)
+                .json(&payload)
+                .send().await 
+            {
+                Ok(resp) => {
+                    if resp.status().is_success() {
+                        if let Ok(json_body) = resp.json::<Value>().await {
+                            if let Some(content) = json_body["choices"][0]["message"]["content"].as_str() {
+                                cause = content.to_string();
+                                conf = 0.88;
+                            }
                         }
+                        break;
+                    } else if resp.status() == 429 && attempt < max_retries {
+                        let retry_after = resp.headers()
+                            .get("retry-after")
+                            .and_then(|v| v.to_str().ok())
+                            .and_then(|v| v.parse::<u64>().ok())
+                            .unwrap_or(8);
+                        warn!("LLM API rate limited (attempt {}). Retrying in {}s...", attempt + 1, retry_after);
+                        tokio::time::sleep(std::time::Duration::from_secs(retry_after)).await;
+                    } else {
+                        warn!("LLM API returned failure status {}: {:?}", resp.status(), resp.text().await.ok());
+                        break;
                     }
-                } else {
-                    warn!("LLM API returned failure status {}: {:?}", resp.status(), resp.text().await.ok());
+                },
+                Err(e) => {
+                    warn!("Failed to connect to LLM API: {}", e);
+                    break;
                 }
-            },
-            Err(e) => warn!("Failed to securely tunnel to LLM API: {}", e),
+            }
         }
     }
 

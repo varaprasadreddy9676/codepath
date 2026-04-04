@@ -1,0 +1,11 @@
+{
+  "servers": {
+    "codepath": {
+      "type": "stdio",
+      "command": "${workspaceFolder}/target/debug/codepath-mcp",
+      "env": {
+        "CODEPATH_API_URL": "http://localhost:3000"
+      }
+    }
+  }
+}

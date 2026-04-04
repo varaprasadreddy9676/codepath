@@ -1,5 +1,6 @@
 pub mod models;
 pub mod settings;
+pub mod embeddings;
 pub mod interpreter;
 pub mod context;
 pub mod evidence;
@@ -8,3 +9,4 @@ pub mod composer;
 pub mod parsers;
 pub mod storage;
 pub mod gatherers;
+pub mod context_engine;

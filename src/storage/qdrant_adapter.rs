@@ -77,10 +77,68 @@ impl QdrantAdapter {
     }
 
     pub async fn search_ast_chunks(&self, collection_name: &str, vector: Vec<f32>, limit: u64) -> Result<Vec<serde_json::Value>, Box<dyn std::error::Error>> {
+        let results = self.search_with_scores(collection_name, vector, limit, None).await?;
+        Ok(results.into_iter().map(|(payload, _score)| payload).collect())
+    }
+
+    /// Search with relevance scores returned alongside payloads
+    pub async fn search_with_scores(
+        &self,
+        collection_name: &str,
+        vector: Vec<f32>,
+        limit: u64,
+        filter: Option<serde_json::Value>,
+    ) -> Result<Vec<(serde_json::Value, f32)>, Box<dyn std::error::Error>> {
         let url = format!("{}/collections/{}/points/search", self.base_url, collection_name);
-        
-        let payload = json!({
+
+        let mut payload = json!({
             "vector": vector,
+            "limit": limit,
+            "with_payload": true
+        });
+        if let Some(f) = filter {
+            payload["filter"] = f;
+        }
+
+        match self.client.post(&url).json(&payload).send().await {
+            Ok(resp) => {
+                if resp.status().is_success() {
+                    let data: serde_json::Value = resp.json().await?;
+                    if let Some(result_arr) = data.get("result").and_then(|r| r.as_array()) {
+                        let scored: Vec<(serde_json::Value, f32)> = result_arr
+                            .iter()
+                            .filter_map(|point| {
+                                let payload = point.get("payload")?.clone();
+                                let score = point.get("score")?.as_f64()? as f32;
+                                Some((payload, score))
+                            })
+                            .collect();
+                        return Ok(scored);
+                    } else {
+                        warn!("Qdrant search returned unexpected response structure");
+                    }
+                } else {
+                    let errmsg = resp.text().await.unwrap_or_default();
+                    warn!("Qdrant search failed: {}", errmsg);
+                }
+            },
+            Err(e) => warn!("Failed to reach Qdrant during search: {}", e),
+        }
+
+        Ok(Vec::new())
+    }
+
+    /// Scroll all points matching a filter (for keyword post-filtering)
+    pub async fn scroll_points(
+        &self,
+        collection_name: &str,
+        filter: serde_json::Value,
+        limit: u64,
+    ) -> Result<Vec<serde_json::Value>, Box<dyn std::error::Error>> {
+        let url = format!("{}/collections/{}/points/scroll", self.base_url, collection_name);
+
+        let payload = json!({
+            "filter": filter,
             "limit": limit,
             "with_payload": true
         });
@@ -89,16 +147,18 @@ impl QdrantAdapter {
             Ok(resp) => {
                 if resp.status().is_success() {
                     let data: serde_json::Value = resp.json().await?;
-                    if let Some(result_arr) = data.get("result").and_then(|r| r.as_array()) {
-                        let payloads = result_arr.iter().filter_map(|point| point.get("payload").cloned()).collect();
+                    if let Some(result) = data.get("result").and_then(|r| r.get("points")).and_then(|p| p.as_array()) {
+                        let payloads = result.iter().filter_map(|p| p.get("payload").cloned()).collect();
                         return Ok(payloads);
+                    } else {
+                        warn!("Qdrant scroll returned unexpected response structure");
                     }
                 } else {
                     let errmsg = resp.text().await.unwrap_or_default();
-                    warn!("Qdrant semantic search pipeline evaluated failure: {}", errmsg);
+                    warn!("Qdrant scroll failed: {}", errmsg);
                 }
             },
-            Err(e) => warn!("Failed to resolve Qdrant endpoint during AST search retrieval: {}", e),
+            Err(e) => warn!("Failed to scroll Qdrant points: {}", e),
         }
 
         Ok(Vec::new())
